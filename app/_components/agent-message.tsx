@@ -55,7 +55,7 @@ export function AgentMessage({
   message,
   onInputResponses,
 }: {
-  readonly canRespond: boolean;
+  readonly canRespond: (requestId: string) => boolean;
   readonly isStreaming: boolean;
   readonly message: EveMessage;
   readonly onInputResponses: (responses: readonly AgentInputResponse[]) => void | Promise<void>;
@@ -96,7 +96,7 @@ function AgentMessagePart({
   part,
   showCaret,
 }: {
-  readonly canRespond: boolean;
+  readonly canRespond: (requestId: string) => boolean;
   readonly onInputResponses: (responses: readonly AgentInputResponse[]) => void | Promise<void>;
   readonly part: EveMessagePart;
   readonly showCaret: boolean;
@@ -126,7 +126,7 @@ function AgentMessagePart({
       if (inputRequest?.kind === "question") {
         return (
           <QuestionRequest
-            canRespond={canRespond}
+            canRespond={canRespond(inputRequest.requestId)}
             inputRequest={inputRequest}
             inputResponse={part.toolMetadata?.eve?.inputResponse}
             onInputResponses={onInputResponses}
@@ -405,7 +405,7 @@ function InputRequestActions({
   onInputResponses,
   part,
 }: {
-  readonly canRespond: boolean;
+  readonly canRespond: (requestId: string) => boolean;
   readonly onInputResponses: (responses: readonly AgentInputResponse[]) => void | Promise<void>;
   readonly part: EveDynamicToolPart;
 }) {
@@ -430,7 +430,7 @@ function InputRequestActions({
         <div className="flex flex-wrap gap-2">
           {inputRequest.options?.map((option) => (
             <Button
-              disabled={!canRespond}
+              disabled={!canRespond(inputRequest.requestId)}
               key={option.id}
               onClick={() => {
                 void onInputResponses([
